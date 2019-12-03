@@ -1,68 +1,103 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+单例模式demo：
+```
+<!DOCTYPE html>
+<html lang="en">
 
-## Available Scripts
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<style>
+    #modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        width: 500px;
+        height: 300px;
+        border: 1px solid #080808;
+        box-shadow: 0 0 7px #4e4d4d;
+        border-radius: 8px;
+        transform: scale(0);
+    }
 
-In the project directory, you can run:
+    #modal p {
+        text-align: center;
+        font-size: 18px;
+        text-shadow: 0 0 2px #171717;
+        color: #040000;
+    }
 
-### `yarn start`
+    .show {
+        transform: scale(1.1) !important;
+        transition: all .4s linear;
+    }
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+    .hide {
+        transform: scale(0) !important;
+        transition: all .6s linear;
+    }
+</style>
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+<body>
+    <button id="button">添加</button>
+    <button id='delete'>删除</button>
 
-### `yarn test`
+</body>
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+</html>
+<script>
+    class Danli {
+        static instance // 静态变量
+        constructor(id, html) {
 
-### `yarn build`
+            this.id = id;
+            this.html = html
+            this.open = false;
+            this.getid = function (id) {
+                return typeof id === "string" ? document.getElementById(id) : '';
+            }
+            if (Danli.instance) {
+                return Danli.instance
+            } else {
+                Danli.instance = this // 否则让构造函数正常运行新建单例并且保存下来
+            }
+        }
+        create() {
+            if (!this.open) {
+                let modal = document.createElement('div');
+                modal.id = this.id
+                modal.innerHTML = this.html;
+                document.querySelector('body').appendChild(modal)
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 0)
+                this.open = true;
+            }
+        }
+        close() {
+            if (this.open) {
+                console.log(this.getid(this.id))
+                this.getid(this.id).classList.add('hide').remove('show')
+                setTimeout(() => {
+                    document.querySelector('body').removeChild(this.getid(this.id));
+                }, 900)
+                this.open = false;
+            }
+        }
+    }
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    const modal = new Danli('modal', '<p>你就是一个弹框</p>');
+    document.querySelector('#button').addEventListener('click', function () {
+        Danli.instance.create()
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+    })
+    document.querySelector('#delete').addEventListener('click', function () {
+        Danli.instance.close()
+    })
+</script>
+```
